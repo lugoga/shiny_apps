@@ -1,0 +1,12 @@
+"0","# Install and load vchartr if not already installed"
+"0","if (!requireNamespace(""vchartr"", quietly = TRUE)) {"
+"0","  install.packages(""vchartr"")"
+"0","}"
+"0",""
+"0","require(vchartr)"
+"0","require(sf)"
+"0","require(tidyverse)"
+"0","require(palmerpenguins)"
+"2","载入需要的程辑包：palmerpenguins
+"
+"2","Warning: 程辑包‘palmerpenguins’是用R版本4.3.1 来建造的"

@@ -1,0 +1,3 @@
+"0","# Color series with continuous values"
+"0","vchart(penguins) %>%"
+"0","  v_scatter(aes(x = bill_length_mm, y = bill_depth_mm, color = body_mass_g))"

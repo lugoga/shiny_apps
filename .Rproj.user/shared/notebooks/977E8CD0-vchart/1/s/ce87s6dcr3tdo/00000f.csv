@@ -1,0 +1,2 @@
+"0","vchart() %>%"
+"0","  v_progress(aes(0.85, ""My progress""))"

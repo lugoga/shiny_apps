@@ -1,0 +1,1 @@
+[{"name":"htmlwidgets","version":"1.6.4","src":{"file":"www"},"meta":null,"script":"htmlwidgets.js","stylesheet":null,"head":null,"attachment":null,"package":"htmlwidgets","all_files":true},{"name":"vchart-binding","version":"0.1.3","src":{"file":"htmlwidgets"},"meta":null,"script":"vchart.js","stylesheet":null,"head":null,"attachment":null,"package":"vchartr","all_files":false}]

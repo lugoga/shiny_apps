@@ -1,0 +1,6 @@
+"0","balance <- data.frame("
+"0","  desc = c(""Starting Cash"","
+"0","           ""Sales"", ""Refunds"", ""Payouts"", ""Court Losses"","
+"0","           ""Court Wins"", ""Contracts"", ""End Cash""),"
+"0","  amount = c(2000, 3400, -1100, -100, -6600, 3800, 1400, 2800)"
+"0",")"

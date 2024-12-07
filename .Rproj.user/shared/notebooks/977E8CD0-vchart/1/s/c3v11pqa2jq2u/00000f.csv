@@ -1,0 +1,3 @@
+"0","# Basic Sankey Chart"
+"0","vchart(energy_sankey) %>%"
+"0","  v_sankey(aes(target, source, value = value))"

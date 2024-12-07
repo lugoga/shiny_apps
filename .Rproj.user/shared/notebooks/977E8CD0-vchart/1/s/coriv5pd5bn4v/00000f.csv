@@ -1,0 +1,4 @@
+"0","# Use the `labeller` option to control how labels are printed:"
+"0","vchart(mpg) %>% "
+"0","  v_scatter(aes(displ, hwy)) %>% "
+"0","  v_facet_wrap(vars(cyl, drv), labeller = label_both)"

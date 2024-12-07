@@ -1,0 +1,4 @@
+"0","# Range area chart"
+"0","vchart(temperatures, aes(date)) %>%"
+"0","  v_area(aes(ymin = low, ymax = high)) %>%"
+"0","  v_line(aes(y = average))"

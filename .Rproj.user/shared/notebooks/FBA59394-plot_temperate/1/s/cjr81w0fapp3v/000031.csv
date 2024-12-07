@@ -1,0 +1,7 @@
+"0","  "
+"0","  # Draw data on the map"
+"0","  vmap(data = co2_world,"
+"0","       aes(name = name, fill = co2_per_capita)"
+"0","       )"
+"2","sf/sfc/sfg class detected; using type=""auto""
+"

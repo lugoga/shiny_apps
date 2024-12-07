@@ -1,0 +1,5 @@
+"0","vchart(table(Class = mpg$class, Year = mpg$year)) %>%"
+"0","  v_bar(aes(Class, Freq, fill = Year)) %>%"
+"0","  v_specs_tooltip("
+"0","    visible = TRUE"
+"0","  )"

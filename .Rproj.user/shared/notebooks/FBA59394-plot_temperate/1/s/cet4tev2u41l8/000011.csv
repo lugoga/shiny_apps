@@ -1,0 +1,6 @@
+"0","# With root level"
+"0","vchart(countries_gdp) %>%"
+"0","  v_circlepacking("
+"0","    aes(lvl1 = REGION_UN, lvl2 = SUBREGION, lvl3 = ADMIN, value = GDP_MD),"
+"0","    use_root = ""World"""
+"0","  )"

@@ -1,0 +1,1313 @@
+---
+title: "Untitled"
+format: html
+---
+
+```{r}
+require(tidyverse)
+require(oce)
+require(patchwork)
+```
+
+
+
+```{r}
+data(ctd)
+ctd
+```
+
+```{r}
+ctd.tb = ctd@data |> 
+  as_tibble()
+
+ctd.tb
+
+```
+
+
+```{r, fig.width=4, fig.height=1.8}
+temperature.profile = ctd.tb |> 
+  ggplot(aes(x = temperature, y = pressure)) +
+  geom_path()+
+  scale_y_reverse(name = "Depth (m)")+
+   scale_x_continuous(position = "top", name = expression(Temperature~(degree*C)), breaks = seq(3,15,3))+
+  cowplot::theme_half_open(font_size = 10)+
+  theme(
+    panel.background = element_rect(fill = "#F3F4F6"), 
+    plot.background = element_rect(fill = "#DEDED9"), 
+    plot.margin = margin(5,5,5,5)
+    )
+
+temperature.hist = ctd.tb |> 
+  ggplot(aes(x = temperature)) +
+  geom_histogram(fill = "#A6CEE3")+
+   scale_y_reverse(name = "Frequency")+
+   scale_x_continuous(position = "top", name = expression(Temperature~(degree*C)), breaks = seq(3,15,3)) +
+  cowplot::theme_half_open(font_size = 10)+
+  theme(panel.background = element_rect(fill = "#F3F4F6"),
+        plot.background = element_rect(fill = "#DEDED9"), 
+        plot.margin = margin(5,5,5,5)
+        )
+
+temperature.hist +  temperature.profile
+
+```
+
+
+# vchart
+
+```{r}
+# Install and load vchartr if not already installed
+if (!requireNamespace("vchartr", quietly = TRUE)) {
+  install.packages("vchartr")
+}
+
+require(vchartr)
+require(sf)
+require(tidyverse)
+require(palmerpenguins)
+
+
+```
+
+
+
+```{r}
+eco2mix |> 
+vchart(aes(date, solar)) |> 
+  v_line()
+```
+
+
+## Maps
+
+```{r}
+# Create map from sf object
+  vmap(co2_world)
+  
+  # Draw data on the map
+  vmap(data = co2_world,
+       aes(name = name, fill = co2_per_capita)
+       )
+  
+  # Change projection and colors
+  vmap(
+    data = co2_world |> filter(co2_per_capita < 30),
+    aes(name = name, fill = co2_per_capita), 
+    projection = "equalEarth"
+  ) |> 
+    v_specs_colors(
+      range = hcl.colors(palette = "Spectral", n = 20, rev = TRUE)
+    ) |> 
+    v_specs_legend(
+      orient = "bottom",
+      type = "color",
+      field = "fill"
+    )
+```
+
+
+```{r}
+# Map discrete data
+  vmap(
+    data = co2_world |>  drop_na(), 
+    aes(
+      name = name,
+      fill = ifelse(co2_per_capita >= 2.3, "Above", "Under")
+    )
+  ) |> 
+    v_specs(
+      area = list(
+        style = list(
+          stroke = "#FFFFFF"
+        )
+      )
+    )
+  
+
+
+```
+
+
+## Area chart
+
+```{r}
+# Basic Area Chart
+vchart(
+  data = eco2mix, aes(date, solar)
+  ) |> 
+  v_area()
+```
+
+
+```{r}
+# Two areas
+vchart(eco2mix, aes(date)) %>%
+  v_area(aes(y = wind)) %>%
+  v_area(aes(y = solar))
+```
+
+
+```{r}
+# Line chart with discrete x axis
+vchart(data.frame(month = month.abb, value = sample(1:50, 12))) %>%
+  v_area(aes(month, value))
+```
+
+
+```{r}
+# Fill color
+vchart(data.frame(month = month.abb, value = sample(1:50, 12))) %>%
+  v_area(
+    aes(month, value),
+    area = list(
+      style = list(fill = "firebrick", fill_opacity = 0.9)
+    )
+  )
+```
+
+
+```{r}
+# Smooth Area Chart
+vchart(data.frame(month = month.abb, value = sample(1:50, 12))) %>%
+  v_area(
+    aes(month, value),
+    area =  list(
+      style = list(curveType = "monotone")
+    )
+  )
+```
+
+
+```{r}
+# Step Area Chart
+vchart(data.frame(month = month.abb, value = sample(1:50, 12))) %>%
+  v_area(
+    aes(month, value),
+    area = list(
+      style = list(curveType = "stepAfter")
+    )
+  )
+```
+
+
+```{r}
+# Multiple areas
+vchart(eco2mix_long) %>%
+  v_area(aes(date, production, fill = source))
+
+vchart(eco2mix_long) %>%
+  v_area(
+    aes(date, production, fill = source),
+    stack = TRUE,
+    area = list(
+      style = list(fillOpacity = 1)
+    )
+  )
+```
+
+
+```{r}
+# Range area chart
+vchart(temperatures, aes(date)) %>%
+  v_area(aes(ymin = low, ymax = high)) %>%
+  v_line(aes(y = average))
+```
+
+
+```{r}
+within(temperatures, {difference = `2024` - average}) %>%
+  vchart(aes(date)) %>%
+  v_area(
+    aes(ymin = average, ymax = `2024`, difference = difference),
+    area = list(
+      style = list(
+        fill = JS(
+          "data => { return data.difference > 0 ? '#F68180' : '#2F64FF' ; }"
+        ),
+        fillOpacity = 1
+      )
+    )
+  )
+```
+
+
+## Bar
+
+```{r}
+# Classic Bar Chart
+vchart(top_generation) %>% 
+  v_bar(aes(country, electricity_generation))
+```
+
+
+```{r}
+# Horizontal Bar Chart
+vchart(top_generation) %>% 
+  v_bar(aes(country, electricity_generation), direction = "horizontal")
+```
+
+
+```{r}
+# Grouped Bar Chart
+vchart(subset(world_electricity, type == "total")) %>% 
+  v_bar(aes(year, generation, fill = source))
+```
+
+
+```{r}
+# Horizontal Grouped Bar Chart
+vchart(subset(world_electricity, type == "total")) %>% 
+  v_bar(aes(year, generation, fill = source), direction = "horizontal")
+```
+
+
+
+```{r}
+# Stacked Bar Chart
+vchart(subset(world_electricity, type == "total")) %>% 
+  v_bar(aes(year, generation, fill = source), stack = TRUE)
+```
+
+
+```{r}
+# Percentage Stacked Bar Chart
+vchart(subset(world_electricity, type == "total")) %>% 
+  v_bar(aes(year, generation, fill = source), stack = TRUE, percent = TRUE)
+```
+
+
+## Boxplot
+
+```{r}
+data("penguins", package = "palmerpenguins")
+
+vchart(penguins) %>% 
+  v_boxplot(aes(species, flipper_length_mm))
+
+
+vchart(penguins) %>% 
+  v_boxplot(aes(species, flipper_length_mm, color = sex))
+
+
+data("mpg", package = "ggplot2")
+
+vchart(mpg) %>% 
+  v_boxplot(aes(as.character(year), hwy))
+
+vchart(mpg) %>% 
+  v_boxplot(aes(class, hwy))
+
+vchart(mpg) %>% 
+  v_boxplot(aes(class, hwy, color = as.character(year)))
+```
+
+
+## Circle packing
+
+```{r}
+vchart(countries_gdp) %>%
+  v_circlepacking(
+    aes(lvl1 = REGION_UN, lvl2 = SUBREGION, lvl3 = ADMIN, value = GDP_MD)
+  )
+```
+
+
+```{r}
+# With root level
+vchart(countries_gdp) %>%
+  v_circlepacking(
+    aes(lvl1 = REGION_UN, lvl2 = SUBREGION, lvl3 = ADMIN, value = GDP_MD),
+    use_root = "World"
+  )
+```
+
+
+```{r}
+
+# Custom colors
+vchart(countries_gdp) %>%
+  v_circlepacking(
+    aes(lvl1 = REGION_UN, lvl2 = SUBREGION, lvl3 = ADMIN, value = GDP_MD)
+  ) %>%
+  v_scale_color_manual(c(
+    Oceania = "#E6AB02",
+    Africa = "#1B9E77",
+    Americas = "#D95F02",
+    Asia = "#E7298A",
+    Europe = "#66A61E",
+    Antarctica = "#7570B3"
+  ))
+
+# Bubble Chart
+vchart(data = countries_gdp,  aes(ADMIN, GDP_MD)) %>%
+  v_circlepacking(label_visible = JS("d => d.value > 261921;"), # 261921 = 3rd Qu.
+  )
+```
+
+
+```{r}
+spData::world |> 
+  st_drop_geometry ()  |> 
+  filter(continent == "Africa") |> 
+  vchart(aes(lvl1 = subregion, lvl2 = name_long, lvl3 = type, value = gdpPercap)) |> 
+  v_circlepacking()
+  
+```
+
+
+## Events
+
+```{r}
+vchart(top_generation) %>% 
+  v_bar(aes(country, electricity_generation)) %>% 
+  v_event(
+    name = "click",
+    params = list(level = "mark", type = "bar"),
+    fun = JS(
+      "e => {",
+      " console.log(e);",
+      " alert(e.datum.x);",
+      "}"
+    )
+  )
+```
+
+
+## Faceting
+
+```{r}
+# Use vars() to supply faceting variables:
+vchart(mpg) %>% 
+  v_scatter(aes(displ, hwy)) %>% 
+  v_facet_wrap(vars(class))
+```
+
+
+```{r}
+# Control the number of rows and columns with nrow and ncol
+vchart(mpg) %>% 
+  v_scatter(aes(displ, hwy)) %>% 
+  v_facet_wrap(vars(class), ncol = 3)
+```
+
+
+```{r}
+# You can facet by multiple variables
+vchart(mpg) %>% 
+  v_scatter(aes(displ, hwy)) %>% 
+  v_facet_wrap(vars(cyl, drv))
+```
+
+
+```{r}
+# Use the `labeller` option to control how labels are printed:
+vchart(mpg) %>% 
+  v_scatter(aes(displ, hwy)) %>% 
+  v_facet_wrap(vars(cyl, drv), labeller = label_both)
+```
+
+
+```{r}
+# To change the order in which the panels appear, change the levels
+# of the underlying factor.
+mpg$class2 <- reorder(mpg$class, mpg$displ)
+vchart(mpg) %>% 
+  v_scatter(aes(displ, hwy)) %>% 
+  v_facet_wrap(vars(class2), ncol = 3)
+```
+
+
+```{r}
+# By default, the same scales are used for all panels. You can allow
+# scales to vary across the panels with the `scales` argument.
+vchart(mpg) %>% 
+  v_scatter(aes(displ, hwy)) %>% 
+  v_facet_wrap(vars(class), scales = "free")
+```
+
+
+
+## gauge
+
+```{r}
+vchart() %>%
+  v_gauge(aes("My gauge", 0.1))
+```
+
+
+```{r}
+vchart() %>%
+  v_gauge(
+    aes("My gauge", 0.8),
+    gauge = list(
+      type = "circularProgress",
+      cornerRadius = 20,
+      progress = list(
+        style = list(
+          fill = "forestgreen"
+        )
+      ),
+      track = list(
+        style = list(
+          fill = "#BCBDBC"
+        )
+      )
+    ),
+    pointer = list(
+      style = list(
+        fill = "#2F2E2F"
+      )
+    )
+  )
+```
+
+
+```{r}
+vchart() %>%
+  v_gauge(aes("My gauge", 0.8)) %>%
+  v_scale_y_continuous(labels = ".0%")
+```
+
+## Progress
+
+```{r}
+vchart() %>%
+  v_progress(aes(0.85, "My progress"))
+
+data.frame(
+  x = c(0.4, 0.3, 0.8, 0.6),
+  y = paste("Course", 1:4)
+) %>%
+  vchart() %>%
+  v_progress(
+    aes(x, y),
+    cornerRadius = 20,
+    bandWidth = 30
+  ) %>%
+  v_scale_y_discrete(
+    label = list(visible = TRUE),
+    domainLine = list(visible = FALSE)
+  )
+
+```
+
+
+
+## Heatmap
+
+```{r}
+# Heatmap with continuous fill variable
+vchart(data = co2_emissions, aes(x = year, y = country, fill = co2_per_capita)) |> 
+  v_heatmap()
+```
+
+
+```{r}
+# Change colors
+vchart(co2_emissions) %>%
+  v_heatmap(aes(x = year, y = country, fill = co2_per_capita)) %>%
+  v_specs_colors(
+    range = rev(
+      c("#8C510A", "#BF812D", "#DFC27D", "#F6E8C3",
+        "#C7EAE5", "#80CDC1", "#35978F", "#01665E")
+    )
+  )
+```
+
+
+```{r}
+# Heatmap with discrete fill variable
+vchart(co2_emissions) %>%
+  v_heatmap(aes(x = year, y = country, fill = co2_growth_change))
+```
+
+
+```{r}
+# Change colors
+vchart(co2_emissions) %>%
+  v_heatmap(aes(x = year, y = country, fill = co2_growth_change)) %>%
+  v_scale_fill_manual(c(
+    Increase = "firebrick",
+    Decrease = "forestgreen"
+  ))
+
+```
+
+
+## Histogram
+
+```{r}
+palmerpenguins::penguins |> 
+  vchart(aes(x = bill_length_mm)) |> 
+  v_hist()
+```
+
+
+```{r}
+# Create an histogram using a numeric variable
+vchart(penguins) %>%
+  v_hist(aes(flipper_length_mm))
+```
+
+
+```{r}
+# Customize some style properties
+vchart(penguins) %>%
+  v_hist(
+    aes(flipper_length_mm),
+    bar = list(
+      style = list(
+        stroke = "white",
+        line_width = 1,
+        fill = "forestgreen"
+      )
+    )
+  )
+```
+
+
+```{r}
+# Use fill aesthetic to differentiate series
+vchart(penguins) %>%
+  v_hist(aes(flipper_length_mm, fill = species))
+```
+
+
+```{r}
+# Stack results
+vchart(penguins) %>%
+  v_hist(aes(flipper_length_mm, fill = species), stack = TRUE)
+```
+
+
+```{r}
+# Use custom colors
+vchart(penguins) %>%
+  v_hist(
+    aes(flipper_length_mm, fill = species),
+    bar = list(
+      style = list(opacity = 0.5)
+    )
+  ) %>%
+  v_scale_color_manual(c(
+    Adelie = "#ffa232",
+    Chinstrap = "#33a2a2",
+    Gentoo = "#b34df2"
+  ))
+```
+
+## jitter
+
+```{r}
+data("penguins", package = "palmerpenguins")
+```
+
+
+
+```{r}
+penguins |> 
+  mutate(across(is.numeric, round, 2)) |> 
+  vchart(
+    aes(x = bill_length_mm, y = bill_depth_mm, color = species)
+    ) |> 
+  v_jitter() |> 
+  v_scale_color_manual(c(
+    Adelie = "#ffa232",
+    Chinstrap = "#33a2a2",
+    Gentoo = "#b34df2"
+  )) |> 
+  v_labs(x = "Length (mm)", y = "Depth (mm)", title = "Penguins Dataset", subtitle = "Sampled in Antarctica") |> 
+  v_mark_hline(y = 16) |>
+  v_mark_vline(x = 42) |>
+  v_mark_segment(x = 36, xend = 48, y = 14, yend = 20) |>
+  v_mark_rect(xmin = 38, xmax = 45, ymin = 13, ymax = 18)
+```
+
+```{r}
+# Draw a rectangle
+vchart(cars) %>%
+  v_scatter(aes(speed, dist)) %>%
+  v_mark_rect(
+    xmin = 10,
+    xmax = 18,
+    ymin = 20,
+    ymax = 50
+  )
+```
+
+## Scatter
+```{r}
+# Basic scatter chart
+vchart(penguins) %>%
+  v_scatter(aes(x = flipper_length_mm, y = body_mass_g))
+```
+
+
+```{r}
+# Color series with discrete values
+vchart(penguins) %>%
+  v_scatter(aes(x = flipper_length_mm, y = body_mass_g, color = species))
+```
+
+
+```{r}
+# Color series with continuous values
+vchart(penguins) %>%
+  v_scatter(aes(x = bill_length_mm, y = bill_depth_mm, color = body_mass_g))
+```
+
+
+```{r}
+# Size of points
+vchart(penguins) %>%
+  v_scatter(aes(x = bill_length_mm, y = bill_depth_mm, size = body_mass_g))
+```
+
+
+```{r}
+# Size and color
+vchart(penguins) %>%
+  v_scatter(aes(
+    x = bill_length_mm,
+    y = bill_depth_mm,
+    color = body_mass_g,
+    size = body_mass_g
+  ))
+```
+
+
+```{r}
+# With shapes
+vchart(penguins) %>%
+  v_scatter(
+    aes(
+      x = bill_length_mm,
+      y = bill_depth_mm,
+      color = species,
+      shape = species
+    )
+  )
+```
+
+
+```{r}
+vchart(penguins) %>%
+  v_scatter(
+    aes(x = flipper_length_mm, y = body_mass_g, color = species)
+  ) %>%
+  v_scale_color_manual(c(
+    Adelie = "#ffa232",
+    Chinstrap = "#33a2a2",
+    Gentoo = "#b34df2"
+  ))
+
+```
+
+
+## Line
+
+```{r}
+# Basic Line Chart
+vchart(eco2mix) %>% 
+  v_line(aes(date, solar))
+```
+
+
+```{r}
+# Two lines
+vchart(tail(eco2mix, 30), aes(date)) %>% 
+  v_line(aes(y = solar)) %>% 
+  v_line(aes(y = wind))
+```
+
+
+```{r}
+# Line chart with discrete x axis
+vchart(data.frame(month = month.abb, value = sample(1:50, 12))) %>% 
+  v_line(aes(month, value))
+```
+
+
+```{r}
+# Stroke color 
+vchart(data.frame(month = month.abb, value = sample(1:50, 12))) %>% 
+  v_line(
+    aes(month, value),
+    line = list(style = list(stroke = "firebrick"))
+  )
+```
+
+
+```{r}
+# Smooth Line Chart
+vchart(data.frame(month = month.abb, value = sample(1:50, 12))) %>% 
+  v_line(
+    aes(month, value), 
+    line = list(style = list(curveType = "monotone"))
+  )
+```
+
+
+```{r}
+# Step Line Chart
+vchart(data.frame(month = month.abb, value = sample(1:50, 12))) %>% 
+  v_line(
+    aes(month, value),
+    line = list(style = list(curveType = "stepAfter"))
+  )
+```
+
+
+```{r}
+# Dash array 
+vchart(data.frame(month = month.abb, value = sample(1:50, 12))) %>% 
+  v_line(
+    aes(month, value),
+    line = list(style = list(lineDash = c(10, 10)))
+  )
+```
+
+
+```{r}
+# Multiple lines
+vchart(data = eco2mix_long, aes(date, production, color = source)) %>% 
+  v_line()
+```
+
+
+## smoothline
+
+```{r}
+data("mpg", package =  "ggplot2")
+
+vchart(mpg, aes(displ, hwy)) %>%
+  v_smooth()
+
+vchart(mpg, aes(displ, hwy)) %>%
+  v_smooth(se = FALSE)
+
+vchart(mpg, aes(displ, hwy, color = class)) %>%
+  v_smooth()
+
+```
+
+
+## pie
+
+```{r}
+penguins |> 
+  group_by(species) |> 
+  tally() |> 
+  vchart(aes(x = species, y = n)) |> 
+  v_pie() |> 
+  v_specs_tooltip(
+    mark = list(
+      content = list(
+        list(
+          key = JS("datum => datum['x']"),
+          value = JS("datum => Math.round(datum['y']) + ' Indi'")
+        ),
+        list(
+          hasShape = FALSE,
+          key = "Proportion",
+          value = JS("datum => datum._percent_ + '%'")
+        )
+      )
+    )
+  )
+  
+```
+
+
+```{r}
+# Customize tooltip
+subset(world_electricity, year == 2023 & type == "total") %>%
+  vchart() %>% 
+  v_pie(aes(x = source, y = generation)) %>%
+  v_specs_tooltip(
+    mark = list(
+      content = list(
+        list(
+          key = JS("datum => datum['x']"),
+          value = JS("datum => Math.round(datum['y']) + ' TWh'")
+        ),
+        list(
+          hasShape = FALSE,
+          key = "Proportion",
+          value = JS("datum => datum._percent_ + '%'")
+        )
+      )
+    )
+  )
+```
+
+
+
+
+```{r}
+# Nested Pie Chart
+vchart() %>% 
+  v_pie(
+    data = subset(world_electricity, year == 2023 & type == "total"),
+    mapping = aes(x = source, y = generation),
+    outerRadius = 0.65,
+    innerRadius = 0,
+    label = list(
+      visible = TRUE,
+      position = "inside",
+      rotate = FALSE,
+      style = list(fill = "white")
+    ),
+    pie = list(
+      style = list(
+        stroke = "#FFFFFF",
+        lineWidth = 2
+      )
+    )
+  ) %>% 
+  v_pie(
+    data = subset(world_electricity, year == 2023 & type == "detail"),
+    mapping = aes(x = source, y = generation),
+    outerRadius = 0.8,
+    innerRadius = 0.67,
+    pie = list(
+      style = list(
+        stroke = "#FFFFFF",
+        lineWidth = 2
+      )
+    )
+  ) 
+```
+
+## Radar
+
+```{r}
+# Default radar chart
+subset(electricity_mix, country == "Germany") %>%
+  vchart() %>%
+  v_radar(aes(source, generation))
+```
+
+
+```{r}
+# Without area
+subset(electricity_mix, country == "Germany") %>%
+  vchart() %>%
+  v_radar(
+    aes(source, generation),
+    area = list(visible = FALSE)
+  )
+```
+
+
+```{r}
+# Mutliple series
+subset(electricity_mix, country %in% c("Germany", "Canada")) %>%
+  vchart() %>%
+  v_radar(aes(source, generation, color = country))
+```
+
+
+```{r}
+# Custom axes
+subset(electricity_mix, country == "Germany") %>%
+  vchart() %>%
+  v_radar(aes(source, generation)) %>%
+  v_scale_y_continuous(min = 0, max = 200)
+```
+
+
+```{r}
+subset(electricity_mix, country == "Germany") %>%
+  vchart() %>%
+  v_radar(aes(source, generation)) %>%
+  v_scale_y_continuous(
+    grid = list(smooth = FALSE),
+    domainLine = list(visible = FALSE)
+  ) %>%
+  v_scale_x_discrete(
+    label = list(space = 20),
+    domainLine = list(visible = FALSE)
+  )
+
+```
+
+
+## Sankey
+
+```{r}
+# Basic Sankey Chart
+vchart(energy_sankey) %>%
+  v_sankey(aes(target, source, value = value))
+
+```
+
+
+
+
+```{r}
+# Some options
+vchart(energy_sankey) %>%
+  v_sankey(
+    aes(target, source, value = value),
+    nodeAlign = "left",
+    nodeGap = 8,
+    nodeWidth = 10,
+    minNodeHeight = 4,
+    link = list(
+      state = list(
+        hover = list(
+          fillOpacity = 1
+        )
+      )
+    )
+  )
+```
+
+
+```{r}
+# With data as tree structure
+titanic <- as.data.frame(Titanic)
+vchart(titanic) %>%
+  v_sankey(aes(
+    lvl1 = Class,
+    lvl2 = Sex,
+    lvl3 = Age,
+    lvl4 = Survived,
+    value = Freq
+  ))
+```
+
+
+```{r}
+# Only one level
+titanic_class <- titanic %>%
+  aggregate(data = ., Freq ~ Class + Survived, FUN = sum)
+
+vchart(titanic_class) %>%
+  v_sankey(aes(Survived, Class, value = Freq))
+
+
+
+```
+
+
+## Sunburst
+
+```{r}
+# Create a sunburst and auto hide labels
+vchart(countries_gdp) %>%
+  v_sunburst(
+    aes(lvl1 = REGION_UN, lvl2 = SUBREGION, lvl3 = ADMIN, value = GDP_MD),
+    gap = 10,
+    labelAutoVisible = list(
+      enable = TRUE
+    ),
+    labelLayout = list(
+      align = "center",
+      rotate = "radial"
+    )
+  )
+```
+
+
+```{r}
+# Custom tooltip
+vchart(countries_gdp) %>%
+  v_sunburst(
+    aes(lvl1 = REGION_UN, lvl2 = SUBREGION, lvl3 = ADMIN, value = GDP_MD)
+  ) %>% 
+  v_specs_tooltip(
+    mark = list(
+      title = list(
+        value = JS("val => val?.datum?.map(data => data.name).join(' / ')")
+      )
+    )
+  )
+```
+
+
+```{r}
+# Custom layout options
+vchart(countries_gdp) %>%
+  v_sunburst(
+    aes(lvl1 = REGION_UN, lvl2 = SUBREGION, lvl3 = ADMIN, value = GDP_MD),
+    gap = 0,
+    innerRadius = c(0, 0.4, 0.8),
+    outerRadius = c(0.3, 0.7, 0.85),
+    labelAutoVisible = list(
+      enable = TRUE,
+      circumference = 1
+    ),
+    labelLayout = list(
+      list(
+        align = "center",
+        rotate = "tangential",
+        offset = 0
+      ),
+      NULL,
+      list(
+        align = "start",
+        rotate = "radial",
+        offset = 15
+      )
+    )
+  ) %>% 
+  v_specs(padding = 70)
+```
+
+
+## treemap
+
+```{r}
+# Basic Treemap Chart
+vchart(countries_gdp) %>%
+  v_treemap(aes(lvl1 = REGION_UN, lvl2 = ADMIN, value = GDP_MD))
+```
+
+
+```{r}
+# With labels
+vchart(countries_gdp) %>%
+  v_treemap(
+    aes(lvl1 = REGION_UN, lvl2 = ADMIN, value = GDP_MD),
+    label = list(visible = TRUE)
+  )
+```
+
+
+```{r}
+# Show all levels
+vchart(countries_gdp) %>%
+  v_treemap(
+    aes(lvl1 = REGION_UN, lvl2 = ADMIN, value = GDP_MD),
+    label = list(visible = TRUE),
+    nonLeaf = list(visible = TRUE),
+    nonLeafLabel = list(visible = TRUE, position = "top")
+  )
+
+```
+
+
+## Venn
+
+```{r}
+# Venn diagram with 2 sets
+data.frame(
+  sets = c("A", "B", "A,B"),
+  value = c(5, 10, 4)
+) %>% 
+  vchart() %>% 
+  v_venn(aes(sets = sets, value = value))
+```
+
+
+```{r}
+# with more sets 
+data.frame(
+  sets = c("A", "B", "C", "A,B", "A,C", "B,C", "A,B,C"),
+  value = c(8, 10, 12, 4, 4, 4, 2)
+) %>% 
+  vchart() %>% 
+  v_venn(aes(sets = sets, value = value))
+```
+
+
+```{r}
+# More complex example
+set.seed(20190708)
+genes <- paste("gene",1:1000,sep="")
+genes <- list(
+  A = sample(genes,300), 
+  B = sample(genes,525), 
+  C = sample(genes,440),
+  D = sample(genes,350)
+)
+
+vchart(stack(genes)) %>% 
+  v_venn(aes(category = ind, values = values))
+
+
+```
+
+## Waterfalls
+
+```{r}
+balance <- data.frame(
+  desc = c("Starting Cash",
+           "Sales", "Refunds", "Payouts", "Court Losses",
+           "Court Wins", "Contracts", "End Cash"),
+  amount = c(2000, 3400, -1100, -100, -6600, 3800, 1400, 2800)
+)
+```
+
+
+```{r}
+vchart(balance) %>% 
+  v_waterfall(aes(x = desc, y = amount))
+```
+
+
+```{r}
+# With total values and formatting
+data.frame(
+  x = c("Feb.4", "Feb.11", "Feb.20", "Feb.25", "Mar.4", 
+        "Mar.11", "Mar.19", "Mar.26", "Apr.1", "Apr.8",
+        "Apr.15", "Apr.22", "Apr.29", "May.6", "total"),
+  total = c(TRUE, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, TRUE),
+  y = c(45L, -5L, 2L, -2L, 2L, 2L, -2L, 1L, 1L, 1L, 2L, 1L, -2L, -1L, NA)
+) %>% 
+  vchart() %>% 
+  v_waterfall(
+    aes(x = x, y = y, total = total),
+    stackLabel = list(
+      valueType = "absolute",
+      formatMethod = JS("text => text + '%'")
+    )
+  ) %>% 
+  v_specs_legend(visible = TRUE)
+
+```
+
+
+## Wordcloud
+
+```{r}
+vchart(top_cran_downloads) %>%
+  v_wordcloud(aes(word = package, count = count))
+```
+
+
+```{r}
+vchart(top_cran_downloads) %>%
+  v_wordcloud(aes(word = package, count = count, color = package))
+```
+
+
+```{r}
+vchart(top_cran_downloads) %>%
+  v_wordcloud(
+    aes(word = package, count = count, color = package),
+    wordCloudConfig = list(
+      zoomToFit = list(
+        enlarge = TRUE,
+        fontSizeLimitMax = 30
+      )
+    )
+  )
+```
+
+
+```{r}
+# Use an image to shape the wordcloud
+vchart(top_cran_downloads) %>%
+  v_wordcloud(
+    aes(word = package, count = count, color = package),
+    maskShape = "https://jeroen.github.io/images/Rlogo.png"
+  )
+```
+
+
+## Miscelleneous
+
+### Legend
+
+```{r}
+data("mpg", package = "ggplot2")
+
+vchart(table(Class = mpg$class, Year = mpg$year)) %>%
+  v_bar(aes(Class, Freq, fill = Year)) %>%
+  v_specs_legend(
+    title = list(text = "Title", visible = TRUE),
+    orient = "right",
+    position = "start",
+    item = list(focus = TRUE)
+  )
+```
+
+### theme
+
+```{r}
+chart <- subset(
+  electricity_mix,
+  country %in% c("Germany", "Brazil", "South Korea")
+) %>%
+  vchart() %>%
+  v_bar(aes(country, generation, fill = source))
+
+# Default appearance
+chart
+
+# Change background color
+chart %>%
+  v_theme(.backgroundColor = "#2F2E2F")
+
+# Change default color palette
+chart %>%
+  v_theme(
+    .colorPalette = palette.colors(n = 8, palette = "Okabe-Ito")[-1]
+  )
+
+# Axis grid color
+chart %>%
+  v_theme(.axisGridColor = "red")
+# same as
+chart %>%
+  v_theme(
+    component = list(
+      axis = list(
+        grid = list(
+          style = list(
+            # lineWidth = 3, # but more options available
+            stroke = "red"
+          )
+        )
+      )
+    )
+  )
+# see https://www.unpkg.com/@visactor/vchart-theme@1.11.6/public/light.json
+# for all possibilities
+
+```
+
+### Data zoom
+
+```{r}
+data("economics", package = "ggplot2")
+vchart(economics, aes(date, unemploy)) %>%
+  v_line() %>%
+  v_specs_datazoom()
+```
+
+
+```{r}
+co2_emissions %>%
+  subset(country %in% c("China", "United States", "India")) %>%
+  vchart() %>%
+  v_line(aes(year, co2, color = country)) %>%
+  v_specs_datazoom(start = "{label:.0f}", startValue = 1990, end = "{label:.0f}")
+```
+
+### Tooltip
+
+```{r}
+vchart(table(Class = mpg$class, Year = mpg$year)) %>%
+  v_bar(aes(Class, Freq, fill = Year)) %>%
+  v_specs_tooltip(
+    visible = TRUE
+  )
+```
+
+### Player
+
+```{r}
+world_electricity %>% 
+  filter(type == "detail") %>% 
+  vchart() %>%
+  v_bar(
+    aes(source, generation, player = year)
+  )
+
+```
+

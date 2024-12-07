@@ -1,0 +1,8 @@
+"0","# Create map from sf object"
+"0","  vmap(co2_world)"
+"2","Registered S3 method overwritten by 'geojsonsf':
+  method        from   
+  print.geojson geojson
+"
+"2","sf/sfc/sfg class detected; using type=""auto""
+"

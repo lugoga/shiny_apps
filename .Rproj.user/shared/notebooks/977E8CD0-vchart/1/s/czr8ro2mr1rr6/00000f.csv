@@ -1,0 +1,5 @@
+"0","# Basic Area Chart"
+"0","vchart("
+"0","  data = eco2mix, aes(date, solar)"
+"0","  ) |> "
+"0","  v_area()"

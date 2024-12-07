@@ -1,0 +1,5 @@
+"0","# Custom axes"
+"0","subset(electricity_mix, country == ""Germany"") %>%"
+"0","  vchart() %>%"
+"0","  v_radar(aes(source, generation)) %>%"
+"0","  v_scale_y_continuous(min = 0, max = 200)"

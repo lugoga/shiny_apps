@@ -1,0 +1,3 @@
+"0","# Horizontal Bar Chart"
+"0","vchart(top_generation) %>% "
+"0","  v_bar(aes(country, electricity_generation), direction = ""horizontal"")"

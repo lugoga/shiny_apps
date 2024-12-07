@@ -1,0 +1,3 @@
+"0","# Basic scatter chart"
+"0","vchart(penguins) %>%"
+"0","  v_scatter(aes(x = flipper_length_mm, y = body_mass_g))"

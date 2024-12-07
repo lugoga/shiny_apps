@@ -1,0 +1,5 @@
+"0","co2_emissions %>%"
+"0","  subset(country %in% c(""China"", ""United States"", ""India"")) %>%"
+"0","  vchart() %>%"
+"0","  v_line(aes(year, co2, color = country)) %>%"
+"0","  v_specs_datazoom(start = ""{label:.0f}"", startValue = 1990, end = ""{label:.0f}"")"

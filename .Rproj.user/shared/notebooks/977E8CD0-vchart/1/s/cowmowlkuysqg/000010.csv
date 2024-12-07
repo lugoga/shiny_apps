@@ -1,0 +1,6 @@
+"0","# With labels"
+"0","vchart(countries_gdp) %>%"
+"0","  v_treemap("
+"0","    aes(lvl1 = REGION_UN, lvl2 = ADMIN, value = GDP_MD),"
+"0","    label = list(visible = TRUE)"
+"0","  )"

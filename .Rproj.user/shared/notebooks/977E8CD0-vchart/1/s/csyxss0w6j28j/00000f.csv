@@ -1,0 +1,7 @@
+"0","# Change colors"
+"0","vchart(co2_emissions) %>%"
+"0","  v_heatmap(aes(x = year, y = country, fill = co2_growth_change)) %>%"
+"0","  v_scale_fill_manual(c("
+"0","    Increase = ""firebrick"","
+"0","    Decrease = ""forestgreen"""
+"0","  ))"

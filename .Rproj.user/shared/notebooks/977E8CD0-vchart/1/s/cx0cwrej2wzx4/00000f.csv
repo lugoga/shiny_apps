@@ -1,0 +1,4 @@
+"0","# Other format for labels"
+"0","vchart(eco2mix) %>%"
+"0","  v_line(aes(date, solar)) %>%"
+"0","  v_scale_x_date(date_labels = ""MMM YYYY"")"

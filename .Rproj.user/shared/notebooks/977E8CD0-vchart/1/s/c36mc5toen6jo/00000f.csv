@@ -1,0 +1,3 @@
+"0","# Multiple lines"
+"0","vchart(data = eco2mix_long, aes(date, production, color = source)) %>% "
+"0","  v_line()"

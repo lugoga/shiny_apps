@@ -1,0 +1,4 @@
+"0",""
+"0","# Axis grid color"
+"0","chart %>%"
+"0","  v_theme(.axisGridColor = ""red"")"

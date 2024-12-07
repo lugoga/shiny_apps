@@ -1,0 +1,7 @@
+"0",""
+"0","# Format labels with locale"
+"0","vchart(eco2mix) %>%"
+"0","  v_line(aes(date, solar)) %>%"
+"0","  v_scale_x_date("
+"0","    date_labels = format_date_dayjs(""MMMM YY"", locale = ""fr"")"
+"0","  )"

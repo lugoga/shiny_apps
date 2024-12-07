@@ -1,0 +1,4 @@
+submission_time,first_name,last_name,date_of_birth,gender,continent,country,region,email,phone,disease,medical_history,diet_restrictions,support_reason
+2024-11-28 22:41:59.944973,Masumbuko,Semba,2024-11-28,Male,Africa,Tanzania,Dar es Salaam,lugosemba@gmail.com,+25571760703,High Blood Pressure,,,"Shiny Assistant is a new AI-powered tool that helps you get things done: you can ask it questions about Shiny, or to create a Shiny application from scratch, or ask it to make changes to an existing application. You can think of it as a knowledgeable colleague who is always ready to help out with your Shiny projects, in both R and in Python.
+
+Let’s have a look at a few practical examples of what Shiny Assistant can do. Suppose you want to build an application to calculate mortgage payments. You can just ask Shiny Assistant to build it for you."

@@ -1,0 +1,3 @@
+"0","# Heatmap with continuous fill variable"
+"0","vchart(data = co2_emissions, aes(x = year, y = country, fill = co2_per_capita)) |> "
+"0","  v_heatmap()"

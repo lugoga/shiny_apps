@@ -1,0 +1,7 @@
+"0","# Venn diagram with 2 sets"
+"0","data.frame("
+"0","  sets = c(""A"", ""B"", ""A,B""),"
+"0","  value = c(5, 10, 4)"
+"0",") %>% "
+"0","  vchart() %>% "
+"0","  v_venn(aes(sets = sets, value = value))"

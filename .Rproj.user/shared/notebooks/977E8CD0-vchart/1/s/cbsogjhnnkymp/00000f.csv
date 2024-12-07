@@ -1,0 +1,5 @@
+"0","spData::world |> "
+"0","  st_drop_geometry ()  |> "
+"0","  filter(continent == ""Africa"") |> "
+"0","  vchart(aes(lvl1 = subregion, lvl2 = name_long, lvl3 = type, value = gdpPercap)) |> "
+"0","  v_circlepacking()"

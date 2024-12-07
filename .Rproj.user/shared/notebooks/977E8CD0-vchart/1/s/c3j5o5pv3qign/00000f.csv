@@ -1,0 +1,6 @@
+"0","world_electricity %>% "
+"0","  filter(type == ""detail"") %>% "
+"0","  vchart() %>%"
+"0","  v_bar("
+"0","    aes(source, generation, player = year)"
+"0","  )"

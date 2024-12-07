@@ -1,0 +1,4 @@
+"0","# You can facet by multiple variables"
+"0","vchart(mpg) %>% "
+"0","  v_scatter(aes(displ, hwy)) %>% "
+"0","  v_facet_wrap(vars(cyl, drv))"

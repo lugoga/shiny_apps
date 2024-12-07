@@ -1,0 +1,14 @@
+"0","# Customize some style properties
+vchart(penguins) %>%
+  v_hist(
+    aes(flipper_length_mm),
+    bar = list(
+      style = list(
+        stroke = ""white"",
+        line_width = 1,
+        fill = ""forestgreen""
+      )
+    )
+  )
+"
+"2","Warning: [38;5;232mRemoved 2 rows containing non-finite outside the scale range (`stat_bin()`).[39m"

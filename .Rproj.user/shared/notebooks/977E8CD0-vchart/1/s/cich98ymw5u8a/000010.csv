@@ -1,0 +1,3 @@
+"0","# Basic Line Chart"
+"0","vchart(eco2mix) %>% "
+"0","  v_line(aes(date, solar))"

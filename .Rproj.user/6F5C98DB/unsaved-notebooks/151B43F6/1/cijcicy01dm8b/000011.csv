@@ -1,0 +1,9 @@
+"0","energy_data = activity_data |>   filter(sector == ""Energy"" )
+"
+"2","Warning in dev.off() :"
+"2"," agg could not write to the given file
+"
+"2","l"
+"2","ibpng warning: Image height is zero in IHDR
+libpng error: Invalid IHDR data
+"

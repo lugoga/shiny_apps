@@ -1,0 +1,4 @@
+"0","# Mutliple series"
+"0","subset(electricity_mix, country %in% c(""Germany"", ""Canada"")) %>%"
+"0","  vchart() %>%"
+"0","  v_radar(aes(source, generation, color = country))"

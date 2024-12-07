@@ -1,0 +1,4 @@
+"0","# Use vars() to supply faceting variables:"
+"0","vchart(mpg) %>% "
+"0","  v_scatter(aes(displ, hwy)) %>% "
+"0","  v_facet_wrap(vars(class))"

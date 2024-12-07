@@ -1,0 +1,5 @@
+"0","# By default, the same scales are used for all panels. You can allow"
+"0","# scales to vary across the panels with the `scales` argument."
+"0","vchart(mpg) %>% "
+"0","  v_scatter(aes(displ, hwy)) %>% "
+"0","  v_facet_wrap(vars(class), scales = ""free"")"

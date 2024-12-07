@@ -1,0 +1,3 @@
+"0","eco2mix |> "
+"0","vchart(aes(date, solar)) |> "
+"0","  v_line()"

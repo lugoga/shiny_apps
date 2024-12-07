@@ -1,0 +1,3 @@
+"0","# Grouped Bar Chart"
+"0","vchart(subset(world_electricity, type == ""total"")) %>% "
+"0","  v_bar(aes(year, generation, fill = source))"

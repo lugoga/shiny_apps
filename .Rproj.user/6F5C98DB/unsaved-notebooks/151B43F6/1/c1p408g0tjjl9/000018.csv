@@ -1,0 +1,12 @@
+"0",""
+"0","if(energy_data$area == ""Mainland""){"
+"0","  energy_data |>    filter(area == ""Mainland"") "
+"0","}else if(energy_data$area == ""Zanzibar""){"
+"0","  energy_data |>  filter(area == ""Zanzibar"") "
+"0","}else{"
+"0","  energy_data |>  group_by(year) |> "
+"0","    summarise(data_value = sum(data_value, na.rm = TRUE)) |> ungroup() "
+"0","}"
+"2","Error in if (energy_data$area == ""Mainland"") { : 
+  the condition has length > 1
+"

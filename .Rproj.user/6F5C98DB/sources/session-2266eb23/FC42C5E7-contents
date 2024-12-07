@@ -1,0 +1,419 @@
+require(shiny)
+require(bslib)
+require(waiter)
+require(tidyverse)
+require(leaflet)
+require(DT)
+require(gt)
+require(scales)
+
+theme_set(new = theme_minimal(base_size = 18))
+
+# Create a data frame for polynomial orders
+polynomial_df <- data.frame(
+  Order = 1:10,
+  Name = c("Linear","Quadratic","Cubic","Quartic","Quintic","Sextic", "Septic", "Octic","Nonic","Decic")
+)
+
+# activity_data = read_csv("../NCMC/webApps/nirT/activity_data.csv")
+activity_data = read_csv("activity_data.csv") |> filter(area == "Mainland")
+
+sectors = activity_data |> distinct(sector)
+
+wajumbe = rio::import("wajumbe.xlsx")
+
+ui = page_sidebar(
+  
+  theme = bs_theme(version = 5, bootswatch = "yeti"),
+
+  # Loading screen setup
+  useWaiter(),
+  waiterPreloader(html = spin_dots(), color = "#fff"),
+  
+  tags$style(
+  HTML("
+    .value-box-title {
+      font-size: 2rem; /* Adjust title size */
+    }
+    .value-box-value {
+      font-size: 5rem; /* Adjust value size */
+    }
+  ")
+  ),
+
+  # Title 
+  title = div(
+    style = "display: flex; align-items: center; gap: 15px;",
+    tags$img(src = "https://upload.wikimedia.org/wikipedia/commons/3/38/Flag_of_Tanzania.svg", height = "40px"),
+    # tags$h3(tags$strong("National Inventory Report | Activity Data")),
+    paste(str_to_upper("National Inventory Report"), "|", "Activity Data", "|", "1995 - 2021"),
+    # bslib::nav_spacer(),
+    # tags$h6(tags$strong("1990 -2021"))
+  ),
+  sidebar = sidebar(
+    width = "300px",
+    # How to Use card
+    card(
+      card_header(
+        "HOW TO USE THE APP?",
+        class = "bg-primary text-white"
+      ),
+      tags$div(
+        style = "font-size: 0.9em; padding: 10px;",
+        tags$p(
+          tags$b("1. Select sector"),
+          tags$br(),
+          "Use the dropdown menu to choose a key category."
+        ),
+        tags$p(
+          tags$b("2. Inventory Year"),
+          tags$br(),
+          "Adjust the time slider to choose specific periods."
+        ),
+        tags$p(
+          tags$b("3. Explore Data:"),
+          tags$ul(
+            style = "padding-left: 0px; margin-top: 5px;",
+            tags$p("View summary statistics, Analyze trends in the time series plot andAccess detailed tabular data "),
+            # tags$li("Analyze trends in the time series plot"),
+            # tags$li("Explore spatial distribution on the map"),
+            # tags$li("Access detailed tabular data"),
+            # tags$img(src = "coat_OG_web.png", height = "120px",  alt = "Logo")
+          )
+        ),
+        # tags$p(
+        #   tags$b("4. Interactive Features:"),
+        #   tags$ul(
+        #     style = "padding-left: 20px; margin-top: 5px;",
+        #     tags$li("Hover over map points for details"),
+        #     tags$li("Sort and filter table data"),
+        #     tags$li("Zoom and pan the map view")
+        #   )
+        # )
+      )
+    ),
+    selectInput(inputId = "sector", label = "Choose sector", choices = sectors),
+    uiOutput("category_filter"), # Dynamically generated second selectInput
+    uiOutput("subcategory_filter"), # Dynamically generated second selectInput
+    sliderInput(inputId = "years", label = "Select Inventory Years", min = 1990, max = 2025, value = c(1995, 2021), step = 1, ticks = FALSE, width = "230px"),
+    sliderInput(inputId = "gaps", label = "Block Gap in Data", min = 1990, max = 2021, value = c(1990, 1995), step = 1, ticks = FALSE, width = "230px"),
+    sliderInput(inputId = "orders", label = "Choose Polynomial order", min = 1, max = 10, value = 3, step = 1),
+    # radioButtons(inputId = "order", label = "Choose formula", choices =  c("Linear" = 1,"Quadratic" = 2,"Cubic" = 3,"Quartic" = 4,"Quintic" = 5,"Sextic" = 6, "Septic" = 7, "Octic" = 8,"Nonic" = 9,"Decic" = 10), selected = 3),
+    
+    hr(),
+    
+    # Acknowledgments card
+    card(
+      class = TRUE,
+      fill = TRUE,
+      card_header(
+        "ACKNOWLEDGEMENTS", 
+        class = "bg-primary text-white"
+        ),
+      # "Contributing Institutions:",
+      tags$p(
+        "The Vice President’s Office – Division of Environment and the National Carbon Monitoring Center 
+        extend their gratitude to all  partners for their support in the development of this National Inventory Report.",
+        class = "card-text"
+      ),
+    ),
+    card_footer(
+      tags$small("Prepared with contributions from mainland Tanzania and Zanzibar.", 
+                 class = "text-muted"), 
+      # nav_spacer(),
+      tags$img(src = "coat_OG_web.png",  height = "40px", alt = "Logo"),
+      tags$img(src = "smz.jfif",  height = "40px", alt = "Logo"),
+    )
+  ),
+  
+  # Key Facts Cards
+  layout_column_wrap(
+    width = 1/4,
+    card(
+      card_header("Current Activity Value", class = "bg-primary text-white"),
+      value_box(
+        title = "Latest Recorded Value",
+        value = textOutput("current_value"),
+        # showcase = icon("chart-line"),
+        theme = "primary"
+      )
+    ),
+    card(
+      card_header("Year-over-Year Change", class = "bg-purple text-white"),
+      value_box(
+        title = "The Percentage Change",
+        value = textOutput("yoy_change"),
+        theme = value_box_theme(bg = "purple", fg = "white")
+      )
+    ),
+    card(
+      card_header("Average Value", class = "bg-info text-white"),
+      value_box(
+        title = "Overall Mean over time",
+        value = textOutput("mean_value"),
+        theme = "info"
+      )
+    ),
+    card(
+      card_header("Peak Value", class = "bg-success text-white"),
+      value_box(
+        title = "The Maximum Value ever",
+        value = textOutput("max_value"),
+        theme = "success"
+      )
+    )
+  ),
+  
+  # layout_columns(
+  #   col_widths = c(2, 2, 2, 2, 2),
+  #   value_box(
+  #     title = "Average Monthly Catch",
+  #     value = textOutput("avg_catch"),
+  #     showcase = bsicons::bs_icon("bar-chart"),
+  #     theme_color = "primary"
+  #   ),
+  #   value_box(
+  #     title = "Total Catch",
+  #     value = textOutput("total_catch"),
+  #     showcase = bsicons::bs_icon("graph-up"),
+  #     theme_color = "danger"
+  #   ),
+  #   value_box(
+  #     title = "Maximum Catch",
+  #     value = textOutput("max_catch"),
+  #     showcase = bsicons::bs_icon("arrow-up-circle"),
+  #     theme_color = "success"
+  #   ),
+  #   value_box(
+  #     title = "Minimum Catch",
+  #     value = textOutput("min_catch"),
+  #     showcase = bsicons::bs_icon("arrow-down-circle"),
+  #     theme_color = "info"
+  #   ),
+  #   value_box(
+  #     title = "Records",
+  #     value = textOutput("n_records"),
+  #     showcase = bsicons::bs_icon("list-ol"),
+  #     theme_color = "warning"
+  #   )
+  # ),
+  
+  layout_columns(
+    col_widths = c(4,3,5),
+    card(
+      card_header("Visualize Trends", class = "bg-primary text-white"),
+      plotOutput("trend_plot", height = "400px")
+    ),
+    # card(
+    #   card_header("Annual rate of change"),
+    #   leafletOutput("data_map", height = "400px")
+    # ),
+    card(
+      card_header("Assess the annual rate", class = "bg-info text-black"),
+      htmlOutput("trend_interpretation") 
+      # DTOutput("data_table")
+    ),
+  card(
+    card_header("Explore the Raw Data", class = "bg-dark text-white"),
+    gt::gt_output("data_table1")
+  )
+  ),
+  # layout_columns(
+  #   col_widths = c(6,6),
+  #   card(
+  #     max_height = "250px",
+  #     card_header("Task Force", class = "bg-primary text-white"),
+  #     gt::gt_output("data_table2")
+  #   )
+  # ),
+  
+  # Footer
+  tags$footer(
+    style = "background-color: #f8f9fa; padding: 15px; text-align: center; margin-top: 20px; border-top: 1px solid #dee2e6;",
+    "© SEMBA 2024 | All Rights Reserved"
+  )
+  
+)
+
+
+server = function(input, output, session){
+  
+  # Reactive: Filter data based on first input
+  filtered_data = reactive({
+    activity_data |> 
+      filter(sector == input$sector & year >= input$years[1] & year <= input$years[2]) 
+    
+  })
+  
+  
+  # Generate second filter (data_category) based on the first filter
+  output$category_filter <- renderUI({
+    selectInput("category_filter_input", "Select category:",
+                choices = unique(filtered_data()$data_category),
+                selected = unique(filtered_data()$data_category)[1])
+  })
+  
+  
+  # Final filtered data based on both filters
+  cleaned_filtered_data <- reactive({
+    req(input$category_filter_input) # Ensure gear input is available
+    filtered_data()[filtered_data()$data_category == input$category_filter_input, ]
+  })
+  
+  
+  # Generate third filter (data_type) based on the first filter
+  output$subcategory_filter <- renderUI({
+    selectInput("subcategory_filter_input", "Select Subcategory:",
+                choices = unique(cleaned_filtered_data()$data_type),
+                selected = unique(cleaned_filtered_data()$data_type)[1])
+  })
+  
+  
+  # Final-final filtered data based on both filters
+  final_filtered_data <- reactive({
+    req(input$subcategory_filter_input) # Ensure gear input is available
+    cleaned_filtered_data()[cleaned_filtered_data()$data_type == input$subcategory_filter_input, ]
+  })
+  
+  
+  output$current_value <- renderText({
+    latest_data <- final_filtered_data() %>% 
+      filter(year == max(year))
+    comma(round(sum(latest_data$data_value, na.rm = TRUE), 2))
+  })
+  
+  output$yoy_change <- renderText({
+    data <- final_filtered_data() %>%
+      arrange(year)
+    latest <- tail(data$data_value, 1)
+    previous <- tail(data$data_value, 2)[1]
+    change_pct <- ((latest - previous) / previous) * 100
+    paste0(round(change_pct, 1), "%")
+  })
+  
+  output$mean_value <- renderText({
+    comma(round(mean(final_filtered_data()$data_value, na.rm = TRUE), 2))
+  })
+  
+  output$max_value <- renderText({
+    comma(round(max(final_filtered_data()$data_value, na.rm = TRUE), 2))
+  })
+  
+  
+  
+  output$trend_plot = renderPlot({
+    final_filtered_data()  |>
+      ggplot(aes(x = year, y = data_value))+
+      geom_line()+
+      geom_point(size = 3) +
+      geom_smooth(method = "lm", formula = y~poly(x,input$orders), fill = "red", color = "red", alpha = .1)+
+      labs(subtitle = paste0(polynomial_df |> slice(input$orders) |> pull(Name)," Polynomial "))+
+      annotate(geom = "rect", xmin = input$gaps[1], xmax = input$gaps[2], ymin = min(final_filtered_data()$data_value, na.rm = TRUE), ymax = Inf, fill = "blue", alpha = .2) +
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 5), labels = scales::label_number(), name = paste0(final_filtered_data() |> slice(1) |> pull(data_category)," (", final_filtered_data() |> slice(1) |> pull(unit),")"))+
+      theme(axis.title.x = element_blank(), panel.grid.minor = element_blank(), panel.grid.major = element_line(linetype = 2, linewidth = .5))
+  })
+  
+  # Dynamic interpretation based on filtered data
+  output$trend_interpretation <- renderUI({
+    
+    data <- final_filtered_data()
+    min_val <- min(data$data_value) |> round(0)
+    max_val <- max(data$data_value) |> round(0)
+    
+    
+    # HTML paragraph
+    HTML(
+    paste(
+      "<p> The analysis based on the selected range (",
+      input$years[1], " to ", input$years[2], 
+      ") shows data from", input$subcategory_filter_input, "category. ",
+      "Values range from", min_val, "to", max_val, 
+      "with an observed trend indicating a progression. ",
+      "The gradient of colors in the table visually emphasizes this trend, ",
+      "highlighting the growth across", input$subcategory_filter_input, "category.</p>"
+    ))
+  })
+  
+  output$data_table = renderDT({
+    final_filtered_data()  |>
+      DT::datatable()
+
+  })
+  
+  output$data_table1 = gt::render_gt({
+    final_filtered_data()  |>
+      select(-sector,-data_category, -area) |> 
+      gt()|>
+      cols_label(
+        year = "Year",
+        data_type = "Type",
+        data_value = "Data",
+        unit = "SI Unit",
+        data_source = "Source"
+      ) |>
+      # cols_label_with(
+      #   fn = ~ janitor::make_clean_names(., case = "all_caps")
+      # )|> 
+      gt::opt_interactive(
+        # use_search = TRUE,
+        use_filters = FALSE,
+        use_resizers = TRUE,
+        use_highlight = TRUE,
+        use_compact_mode = TRUE,
+        use_text_wrapping = FALSE,
+        use_page_size_select = TRUE
+      ) |> 
+      fmt_number(decimals = 0) |>
+      fmt_integer(year, use_seps = FALSE) |> 
+      # Add coloring for the numeric column
+      data_color(
+        columns = vars(data_value),
+        colors = scales::col_numeric(
+          palette = hcl.colors(n = 120, palette = "Spectral", rev = TRUE, fixup = TRUE),
+          domain = range(final_filtered_data()$data_value)
+        )
+      ) 
+    
+  })
+  
+  output$data_table2 = gt::render_gt({
+    wajumbe |> 
+      select(
+        -gender, -Area, -phone, -middle
+      ) |> 
+      mutate(city = str_to_upper(city), address = str_to_upper(address)) |> 
+      gt(rowname_col = "firstname") |> 
+      # tab_header(title = "Task Force Members for GHG emission Estimation") |> 
+      tab_stubhead(label = "Name") |> 
+      fmt_email(columns = email) |> 
+      # fmt_country(columns = Area) |> 
+      cols_merge(
+        columns = c(institution, address, city),
+        pattern = "{1}<br>{2}<br>{3}<br>"
+      ) |> 
+      cols_merge(
+        columns = c(firstname, surname),
+        pattern = "{1}<br>{2}"
+      ) |> 
+      cols_label(
+        institution = "Affiliation Mailing Adress",
+        email = "Email"
+      ) |> 
+      # tab_style(
+      #   style = cell_text(size = "x-small"),
+      #   locations = cells_body(columns = c(institution,institution))
+      # ) |>
+      opt_align_table_header(align = "left")
+  })
+  
+  
+}
+
+
+shinyApp(ui = ui, server = server)
+
+
+
+
+
+

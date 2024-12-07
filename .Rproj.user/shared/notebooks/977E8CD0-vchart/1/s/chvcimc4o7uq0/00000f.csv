@@ -1,0 +1,8 @@
+"0","# Step Area Chart"
+"0","vchart(data.frame(month = month.abb, value = sample(1:50, 12))) %>%"
+"0","  v_area("
+"0","    aes(month, value),"
+"0","    area = list("
+"0","      style = list(curveType = ""stepAfter"")"
+"0","    )"
+"0","  )"

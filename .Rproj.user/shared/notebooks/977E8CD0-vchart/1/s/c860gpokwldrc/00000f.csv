@@ -1,0 +1,2 @@
+"0","vchart(top_cran_downloads) %>%"
+"0","  v_wordcloud(aes(word = package, count = count, color = package))"

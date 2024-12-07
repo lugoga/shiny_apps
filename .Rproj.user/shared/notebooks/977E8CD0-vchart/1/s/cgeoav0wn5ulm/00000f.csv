@@ -1,0 +1,4 @@
+"0","palmerpenguins::penguins |> "
+"0","  vchart(aes(x = bill_length_mm)) |> "
+"0","  v_hist()"
+"2","Warning: [38;5;232mRemoved 2 rows containing non-finite outside the scale range (`stat_bin()`).[39m"

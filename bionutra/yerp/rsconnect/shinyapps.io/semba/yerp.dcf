@@ -1,0 +1,12 @@
+name: yerp
+title: yerp
+username: semba
+account: semba
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 13459797
+bundleId: 9448108
+url: https://semba.shinyapps.io/yerp/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

@@ -1,0 +1,5 @@
+"0",""
+"0","# Bubble Chart"
+"0","vchart(data = countries_gdp,  aes(ADMIN, GDP_MD)) %>%"
+"0","  v_circlepacking(label_visible = JS(""d => d.value > 261921;""), # 261921 = 3rd Qu."
+"0","  )"

@@ -1,0 +1,4 @@
+"0","# Two areas"
+"0","vchart(eco2mix, aes(date)) %>%"
+"0","  v_area(aes(y = wind)) %>%"
+"0","  v_area(aes(y = solar))"

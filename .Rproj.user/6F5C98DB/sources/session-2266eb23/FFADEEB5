@@ -1,0 +1,26 @@
+{
+    "id": "FFADEEB5",
+    "path": "D:/shinysApps/01_structure/app.R",
+    "project_path": "01_structure/app.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": true,
+    "created": 1732419080484.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "41,45",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1732419930,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1732421057214,
+    "read_only": false,
+    "read_only_alternatives": []
+}

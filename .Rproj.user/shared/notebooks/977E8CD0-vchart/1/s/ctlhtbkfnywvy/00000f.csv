@@ -1,0 +1,3 @@
+"0","# Basic Treemap Chart"
+"0","vchart(countries_gdp) %>%"
+"0","  v_treemap(aes(lvl1 = REGION_UN, lvl2 = ADMIN, value = GDP_MD))"

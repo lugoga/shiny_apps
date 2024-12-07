@@ -1,0 +1,3 @@
+"0","# Line chart with discrete x axis"
+"0","vchart(data.frame(month = month.abb, value = sample(1:50, 12))) %>%"
+"0","  v_area(aes(month, value))"

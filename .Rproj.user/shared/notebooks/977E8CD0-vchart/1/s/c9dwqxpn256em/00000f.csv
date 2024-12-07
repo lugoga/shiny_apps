@@ -1,0 +1,4 @@
+"0","data(""economics"", package = ""ggplot2"")"
+"0","vchart(economics, aes(date, unemploy)) %>%"
+"0","  v_line() %>%"
+"0","  v_specs_datazoom()"

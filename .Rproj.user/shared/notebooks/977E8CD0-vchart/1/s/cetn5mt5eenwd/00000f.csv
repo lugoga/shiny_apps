@@ -1,0 +1,6 @@
+"0","# Smooth Line Chart"
+"0","vchart(data.frame(month = month.abb, value = sample(1:50, 12))) %>% "
+"0","  v_line("
+"0","    aes(month, value), "
+"0","    line = list(style = list(curveType = ""monotone""))"
+"0","  )"

@@ -1,0 +1,6 @@
+"0","# Only one level"
+"0","titanic_class <- titanic %>%"
+"0","  aggregate(data = ., Freq ~ Class + Survived, FUN = sum)"
+"0",""
+"0","vchart(titanic_class) %>%"
+"0","  v_sankey(aes(Survived, Class, value = Freq))"

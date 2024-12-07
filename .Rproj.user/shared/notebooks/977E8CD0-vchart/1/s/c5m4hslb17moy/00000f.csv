@@ -1,0 +1,6 @@
+"0","# Use an image to shape the wordcloud"
+"0","vchart(top_cran_downloads) %>%"
+"0","  v_wordcloud("
+"0","    aes(word = package, count = count, color = package),"
+"0","    maskShape = ""https://jeroen.github.io/images/Rlogo.png"""
+"0","  )"

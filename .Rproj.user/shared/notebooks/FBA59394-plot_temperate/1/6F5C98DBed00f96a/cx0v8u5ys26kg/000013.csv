@@ -1,0 +1,8 @@
+"0",""
+"0","# Different formats in labels and tootlip"
+"0","vchart(eco2mix) %>%"
+"0","  v_line(aes(date, solar)) %>%"
+"0","  v_scale_x_date("
+"0","    date_labels = ""YYYY-MM"","
+"0","    date_labels_tooltip = ""MMMM YYYY"""
+"0","  )"

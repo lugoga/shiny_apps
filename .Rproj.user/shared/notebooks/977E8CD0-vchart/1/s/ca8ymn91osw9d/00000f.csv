@@ -1,0 +1,2 @@
+"0","vchart() %>%"
+"0","  v_gauge(aes(""My gauge"", 0.1))"

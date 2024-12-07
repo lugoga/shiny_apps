@@ -1,0 +1,7 @@
+"0","# with more sets "
+"0","data.frame("
+"0","  sets = c(""A"", ""B"", ""C"", ""A,B"", ""A,C"", ""B,C"", ""A,B,C""),"
+"0","  value = c(8, 10, 12, 4, 4, 4, 2)"
+"0",") %>% "
+"0","  vchart() %>% "
+"0","  v_venn(aes(sets = sets, value = value))"

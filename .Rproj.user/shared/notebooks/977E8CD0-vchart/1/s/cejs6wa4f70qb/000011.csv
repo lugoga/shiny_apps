@@ -1,0 +1,6 @@
+"0","# To change the order in which the panels appear, change the levels"
+"0","# of the underlying factor."
+"0","mpg$class2 <- reorder(mpg$class, mpg$displ)"
+"0","vchart(mpg) %>% "
+"0","  v_scatter(aes(displ, hwy)) %>% "
+"0","  v_facet_wrap(vars(class2), ncol = 3)"

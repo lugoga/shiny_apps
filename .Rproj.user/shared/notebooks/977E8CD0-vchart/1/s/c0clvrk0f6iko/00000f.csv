@@ -1,0 +1,4 @@
+"0","# Use fill aesthetic to differentiate series"
+"0","vchart(penguins) %>%"
+"0","  v_hist(aes(flipper_length_mm, fill = species))"
+"2","Warning: [38;5;232mRemoved 2 rows containing non-finite outside the scale range (`stat_bin()`).[39m"

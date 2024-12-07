@@ -1,0 +1,20 @@
+condition,biomarker,optimal_value,units,comparison_type,min_value,max_value
+Hypertension,Systolic,120,mmHg,less,80,200
+Hypertension,Diastolic,80,mmHg,less,40,120
+Metabolic Syndrome,Waist circumference (Males),40,inches,less,20,60
+Metabolic Syndrome,Waist circumference (Females),35,inches,less,20,55
+Metabolic Syndrome,TG: HDL Ratio,2.5,ratio,less,0,5
+Heart Disease,Serum Homocysteine,15,μmol/L,less,5,30
+Fatty Liver Disease,ALT (Caucasians),25,IU/L,less,10,50
+Fatty Liver Disease,ALT (African Americans),20,IU/L,less,10,50
+Glucose Intolerance,Fasting Glucose,5.6,mmol/L,less,3,10
+Glucose Intolerance,2-Hour Glucose,7.8,mmol/L,less,4,15
+Glucose Intolerance,HbA1c,6,%,less,4,10
+Type 2 Diabetes,Fasting Glucose,7,mmol/L,less,4,15
+Type 2 Diabetes,2-Hour Glucose,11.1,mmol/L,less,6,20
+Type 2 Diabetes,HbA1c,6.5,%,less,4,10
+Cardiovascular Health,HDL-C (Men),40,mg/dL,greater,20,80
+Cardiovascular Health,HDL-C (Women),50,mg/dL,greater,30,90
+Anemia,Hemoglobin (Men),13.5,g/dL,greater,8,20
+Anemia,Hemoglobin (Women),12,g/dL,greater,8,18
+Weight Status,BMI,25,kg/m²,less,15,45

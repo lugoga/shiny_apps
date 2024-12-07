@@ -1,0 +1,4 @@
+"0","# Two lines"
+"0","vchart(tail(eco2mix, 30), aes(date)) %>% "
+"0","  v_line(aes(y = solar)) %>% "
+"0","  v_line(aes(y = wind))"

@@ -1,0 +1,25 @@
+---
+title: "Untitled"
+format: html
+---
+
+```{r}
+# activity_data = read_csv("D:/NCMC/webApps/nirT/activity_data.csv")
+activity_data = read_csv("activity_data.csv") #|> filter(area == "Mainland")
+
+sectors = activity_data |> distinct(sector)
+energy_data = activity_data |>   filter(sector == "Energy" )
+```
+
+```{r}
+
+if(energy_data$area == "Mainland"){
+  energy_data |>    filter(area == "Mainland") 
+}else if(energy_data$area == "Zanzibar"){
+  energy_data |>  filter(area == "Zanzibar") 
+}else{
+  energy_data |>  group_by(year) |> 
+    summarise(data_value = sum(data_value, na.rm = TRUE)) |> ungroup() 
+}
+```
+

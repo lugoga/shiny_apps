@@ -1,0 +1,18 @@
+"0","# Map discrete data
+  vmap(
+    data = co2_world |>  drop_na(), 
+    aes(
+      name = name,
+      fill = ifelse(co2_per_capita >= 2.3, ""Above"", ""Under"")
+    )
+  ) |> 
+    v_specs(
+      area = list(
+        style = list(
+          stroke = ""#FFFFFF""
+        )
+      )
+    )
+"
+"2","sf/sfc/sfg class detected; using type=""auto""
+"
